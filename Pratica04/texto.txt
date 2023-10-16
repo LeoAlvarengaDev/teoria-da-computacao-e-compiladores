@@ -1,0 +1,2 @@
+Tamanho da string: 8
+Reverso da string: odranoel
