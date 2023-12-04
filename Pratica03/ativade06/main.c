@@ -3,144 +3,144 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define MAX_CITIES 3
+#define MAX_CIDADES 3
 
 // Definindo os nomes das cidades
-char cities[MAX_CITIES][30] = {
+char cidades[MAX_CIDADES][30] = {
     "Rio de Janeiro",
-    "Sao Paulo",
+    "S√£o Paulo",
     "Belo Horizonte"
 };
 
-// Estrutura para representar uma aresta com rÛtulo (dist‚ncia)
+// Estrutura para representar uma aresta com r√≥tulo (dist√¢ncia)
 typedef struct {
-    int destination; // O Ìndice da cidade de destino
-    int distance;    // A dist‚ncia entre as cidades
-} Edge;
+    int destino; // O √≠ndice da cidade de destino
+    int distancia;    // A dist√¢ncia entre as cidades
+} Aresta;
 
-// Matriz de adjacÍncia para representar o grafo
-int graph[MAX_CITIES][MAX_CITIES] = {0};
+// Matriz de adjac√™ncia para representar o grafo
+int grafo[MAX_CIDADES][MAX_CIDADES] = {0};
 
-// FunÁ„o para inserir uma aresta (arco) no grafo
-void addEdge(int source, int destination, int distance) {
-    graph[source][destination] = distance;
+// Fun√ß√£o para inserir uma aresta (arco) no grafo
+void adicionarAresta(int origem, int destino, int distancia) {
+    grafo[origem][destino] = distancia;
 }
 
-// FunÁ„o recursiva para calcular o comprimento do caminho entre duas cidades
-int findPathLength(int source, int destination, int pathLength) {
-    if (source == destination) {
-        return pathLength;
+// Fun√ß√£o recursiva para calcular o comprimento do caminho entre duas cidades
+int encontrarComprimentoCaminho(int origem, int destino, int comprimentoCaminho) {
+    if (origem == destino) {
+        return comprimentoCaminho;
     }
 
-    int minLength = -1; // Inicializa com um valor que indica que n„o h· caminho
-    for (int i = 0; i < MAX_CITIES; i++) {
-        if (graph[source][i] > 0) {
-            int length = findPathLength(i, destination, pathLength + graph[source][i]);
-            if (length > 0 && (minLength == -1 || length < minLength)) {
-                minLength = length;
+    int comprimentoMinimo = -1; // Inicializa com um valor que indica que n√£o h√° caminho
+    for (int i = 0; i < MAX_CIDADES; i++) {
+        if (grafo[origem][i] > 0) {
+            int comprimento = encontrarComprimentoCaminho(i, destino, comprimentoCaminho + grafo[origem][i]);
+            if (comprimento > 0 && (comprimentoMinimo == -1 || comprimento < comprimentoMinimo)) {
+                comprimentoMinimo = comprimento;
             }
         }
     }
 
-    return minLength;
+    return comprimentoMinimo;
 }
 
-// FunÁ„o para verificar se h· ciclos no grafo (utiliza DFS)
-bool hasCycle(int node, bool visited[], bool stack[]) {
-    if (!visited[node]) {
-        visited[node] = true;
-        stack[node] = true;
+// Fun√ß√£o para verificar se h√° ciclos no grafo (utiliza DFS)
+bool temCiclo(int no, bool visitado[], bool pilha[]) {
+    if (!visitado[no]) {
+        visitado[no] = true;
+        pilha[no] = true;
 
-        for (int i = 0; i < MAX_CITIES; i++) {
-            if (graph[node][i] > 0) {
-                if (!visited[i] && hasCycle(i, visited, stack)) {
+        for (int i = 0; i < MAX_CIDADES; i++) {
+            if (grafo[no][i] > 0) {
+                if (!visitado[i] && temCiclo(i, visitado, pilha)) {
                     return true;
-                } else if (stack[i]) {
+                } else if (pilha[i]) {
                     return true;
                 }
             }
         }
     }
 
-    stack[node] = false;
+    pilha[no] = false;
     return false;
 }
 
-// FunÁ„o para calcular o grau de entrada de cada nÛ
-void inDegree() {
-    int inDegrees[MAX_CITIES] = {0};
+// Fun√ß√£o para calcular o grau de entrada de cada n√≥
+void grauEntrada() {
+    int grausEntrada[MAX_CIDADES] = {0};
 
-    for (int i = 0; i < MAX_CITIES; i++) {
-        for (int j = 0; j < MAX_CITIES; j++) {
-            if (graph[j][i] > 0) {
-                inDegrees[i]++;
+    for (int i = 0; i < MAX_CIDADES; i++) {
+        for (int j = 0; j < MAX_CIDADES; j++) {
+            if (grafo[j][i] > 0) {
+                grausEntrada[i]++;
             }
         }
     }
 
     printf("Grau de entrada de cada cidade:\n");
-    for (int i = 0; i < MAX_CITIES; i++) {
-        printf("%s: %d\n", cities[i], inDegrees[i]);
+    for (int i = 0; i < MAX_CIDADES; i++) {
+        printf("%s: %d\n", cidades[i], grausEntrada[i]);
     }
 }
 
-// FunÁ„o para calcular o grau de saÌda de cada nÛ
-void outDegree() {
-    printf("Grau de saÌda de cada cidade:\n");
-    for (int i = 0; i < MAX_CITIES; i++) {
-        int outDegree = 0;
-        for (int j = 0; j < MAX_CITIES; j++) {
-            if (graph[i][j] > 0) {
-                outDegree++;
+// Fun√ß√£o para calcular o grau de sa√≠da de cada n√≥
+void grauSaida() {
+    printf("Grau de sa√≠da de cada cidade:\n");
+    for (int i = 0; i < MAX_CIDADES; i++) {
+        int grauSaida = 0;
+        for (int j = 0; j < MAX_CIDADES; j++) {
+            if (grafo[i][j] > 0) {
+                grauSaida++;
             }
         }
-        printf("%s: %d\n", cities[i], outDegree);
+        printf("%s: %d\n", cidades[i], grauSaida);
     }
 }
 
 int main() {
     // Inserir arestas (arcos) no grafo
-    addEdge(0, 1, 450); // Rio de Janeiro para S„o Paulo: 450 km
-    addEdge(1, 2, 600); // S„o Paulo para Belo Horizonte: 600 km
-    addEdge(2, 0, 500); // Belo Horizonte para Rio de Janeiro: 500 km
+    adicionarAresta(0, 1, 450); // Rio de Janeiro para S√£o Paulo: 450 km
+    adicionarAresta(1, 2, 600); // S√£o Paulo para Belo Horizonte: 600 km
+    adicionarAresta(2, 0, 500); // Belo Horizonte para Rio de Janeiro: 500 km
 
     // Calcular e apresentar o comprimento do caminho entre duas cidades
-    int source, destination;
-    printf("Digite o Ìndice da cidade de origem (0 - Rio de Janeiro, 1 - S„o Paulo, 2 - Belo Horizonte): ");
-    scanf("%d", &source);
-    printf("Digite o Ìndice da cidade de destino (0 - Rio de Janeiro, 1 - S„o Paulo, 2 - Belo Horizonte): ");
-    scanf("%d", &destination);
+    int origem, destino;
+    printf("Digite o √≠ndice da cidade de origem (0 - Rio de Janeiro, 1 - S√£o Paulo, 2 - Belo Horizonte): ");
+    scanf("%d", &origem);
+    printf("Digite o √≠ndice da cidade de destino (0 - Rio de Janeiro, 1 - S√£o Paulo, 2 - Belo Horizonte): ");
+    scanf("%d", &destino);
 
-    int pathLength = findPathLength(source, destination, 0);
-    if (pathLength > 0) {
-        printf("O comprimento do caminho entre %s e %s È %d km.\n", cities[source], cities[destination], pathLength);
+    int comprimentoCaminho = encontrarComprimentoCaminho(origem, destino, 0);
+    if (comprimentoCaminho > 0) {
+        printf("O comprimento do caminho entre %s e %s √© %d km.\n", cidades[origem], cidades[destino], comprimentoCaminho);
     } else {
-        printf("N„o h· um caminho direto entre %s e %s.\n", cities[source], cities[destination]);
+        printf("N√£o h√° um caminho direto entre %s e %s.\n", cidades[origem], cidades[destino]);
     }
 
-    // Verificar se h· ciclos no grafo
-    bool visited[MAX_CITIES] = {false};
-    bool stack[MAX_CITIES] = {false};
-    bool hasCycles = false;
+    // Verificar se h√° ciclos no grafo
+    bool visitado[MAX_CIDADES] = {false};
+    bool pilha[MAX_CIDADES] = {false};
+    bool temCiclos = false;
 
-    for (int i = 0; i < MAX_CITIES; i++) {
-        if (!visited[i] && hasCycle(i, visited, stack)) {
-            hasCycles = true;
+    for (int i = 0; i < MAX_CIDADES; i++) {
+        if (!visitado[i] && temCiclo(i, visitado, pilha)) {
+            temCiclos = true;
             break;
         }
     }
 
-    if (hasCycles) {
+    if (temCiclos) {
         printf("O grafo possui ciclos.\n");
     } else {
-        printf("O grafo n„o possui ciclos.\n");
+        printf("O grafo n√£o possui ciclos.\n");
     }
 
-    // Calcular o grau de entrada de cada nÛ
-        inDegree();
+    // Calcular o grau de entrada de cada n√≥
+    grauEntrada();
 
-    // Calcular o grau de saÌda de cada nÛ
-    outDegree();
+    // Calcular o grau de sa√≠da de cada n√≥
+    grauSaida();
 
     return 0;
 }
